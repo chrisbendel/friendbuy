@@ -1,5 +1,8 @@
-// const { sum } = require('./main');
+const {
+    set,
+    get,
+    unset,
+    numEqualTo
+} = require('./state');
 
-// test('adds 1 + 2 to equal 3', () => {
-//     expect(sum(1, 2)).toBe(3);
-// });
+// TODO Implement basic tests if time permits

@@ -6,7 +6,6 @@ const {
     end,
     all,
     incrementTransaction,
-    resetTransaction,
     print,
     begin,
     rollback,
@@ -18,6 +17,24 @@ const readLine = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
+print(`
+    #####################################\m
+    !!!!!!!! Welcome to badredis !!!!!!!!\n
+    #####################################\m
+    Basic commands (commands are case insensitive, keys are case sensitive): \n
+    SET <name> <value>\n
+    GET <name>\n
+    UNSET <name>\n
+    NUMEQUALTO <value>\n
+    END\n
+    ALL\n
+    <------------------>\n
+    For transactions:\n
+    BEGIN\n
+    ROLLBACK\n
+    COMMIT\n
+`);
 
 readLine.setPrompt('badredis> ');
 readLine.prompt();
@@ -56,13 +73,29 @@ readLine.on('line', function(line) {
             end();
             break;
         case 'begin':
-            print('set!');
+            begin();
             break;
         case 'rollback':
-            print('set!');
+            rollback();
             break;
         case 'commit':
-            print('set!');
+            commit();
+            break;
+        case 'help':
+            print(`
+                Basic commands (commands are case insensitive, keys are case sensitive): \n
+                SET <name> <value>\n
+                GET <name>\n
+                UNSET <name>\n
+                NUMEQUALTO <value>\n
+                END\n
+                ALL\n
+                <------------------>\n
+                For transactions:\n
+                BEGIN\n
+                ROLLBACK\n
+                COMMIT\n
+            `);
             break;
         default:
             print(`

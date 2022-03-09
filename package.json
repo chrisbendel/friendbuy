@@ -17,9 +17,7 @@
         "url": "https://github.com/chrisbendel/friendbuy/issues"
     },
     "homepage": "https://github.com/chrisbendel/friendbuy#readme",
-    "dependencies": {
-        "minimist-lite": "^2.2.0"
-    },
+    "dependencies": {},
     "devDependencies": {
         "jest": "^27.5.1"
     }
