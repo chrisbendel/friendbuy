@@ -7,7 +7,6 @@ const {
     begin,
     rollback,
     commit,
-    end
 } = require('./state');
 
 describe("Scenario 1", () => {

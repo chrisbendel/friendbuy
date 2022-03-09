@@ -2,9 +2,9 @@
     "name": "friendbuy",
     "version": "1.0.0",
     "description": "friendbuy technical exercise",
-    "main": "main.js",
+    "main": "badredis.js",
     "scripts": {
-        "start": "node main.js",
+        "start": "node badredis.js",
         "test": "jest"
     },
     "repository": {

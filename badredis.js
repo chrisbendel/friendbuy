@@ -5,7 +5,6 @@ const {
     numEqualTo,
     end,
     all,
-    incrementTransaction,
     print,
     begin,
     rollback,

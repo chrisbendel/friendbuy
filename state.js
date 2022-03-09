@@ -1,15 +1,14 @@
 let state = {};
 let inTransaction = false;
 
-// stateStack
-// This will let us traverse back N number of operations if needed?
+// This will let us time travel to different states
 // initialize with empty state
-// now we can time travel
-const stateSnapshots = [{}];
+let stateSnapshots = [{}];
 
-// DURING transactions, keep a count of how many operations were performed
-// if ROLLBACK - then retrieve state N number of items back
-// if new BEGIN, keep track of past blocks so we know how far to go back
+// blockMarker structure: {[blockCounterIndex]: transactionCounter]}
+// eg: {1: 5, 2: 17} -> first block starts at transaction 5, second block starts at transaction 17
+let blockMarkers = {};
+
 let transactionCounter = 0;
 const incrementTransaction = () => {
     transactionCounter += 1;
@@ -19,15 +18,13 @@ const incrementBlock = () => {
     blockCounter += 1;
 }
 
-// blockMarker structure: {[blockCounterIndex]: transactionCounter]}
-// eg: {1: 5, 2: 17} -> first block starts at transaction 5, second block starts at transaction 17
-let blockMarkers = {};
+const deccrementBlock = () => {
+    blockCounter -= 1;
+}
 
 // state is immutable, reassign every time
 const setState = (newState) => {
-    // TODO only track statesnapshots when beginning transactions, otherwise waste of memory
-    // use object.create to avoid memory/reference BS
-    stateSnapshots.push(Object.create(newState));
+    stateSnapshots.push(Object.assign({}, newState));
     state = newState;
 };
 
@@ -64,7 +61,7 @@ const unset = (name) => {
     if (!name) {
         print('Missing name\n');
     }
-    const newState = Object.create(state);
+    const newState = Object.assign({}, state);
     delete newState[name];
     setState(newState);
     incrementTransaction();
@@ -103,15 +100,18 @@ const rollback = () => {
     if (blockCounter > 0) {
         transactionCounter = blockMarkers[blockCounter];
         delete blockMarkers[blockCounter];
-        blockCounter -= 1;
         const lastState = stateSnapshots[transactionCounter];
-        stateSnapshots.splice(transactionCounter + 1);
+        stateSnapshots.splice(transactionCounter);
         setState(lastState);
-    } else {
-        inTransaction = false;
-        transactionCounter = 0;
-        blockCounter = 0;
+        deccrementBlock();
     }
+    // } else {
+    //     inTransaction = false;
+    //     transactionCounter = 0;
+    //     blockCounter = 0;
+    //     blockMarkers = {};
+    //     stateSnapshots = [{}];
+    // }
 }
 
 const commit = () => {
@@ -119,8 +119,8 @@ const commit = () => {
     transactionCounter = 0;
     blockCounter = 0;
     blockMarkers = {};
+    stateSnapshots = [{}];
 }
-
 
 // To avoid any weirdness with console.log and the CLI
 // precaution cause console.log automatically appends \n 
@@ -136,7 +136,6 @@ module.exports = {
     numEqualTo,
     end,
     all,
-    incrementTransaction,
     print,
     begin,
     rollback,
