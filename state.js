@@ -20,13 +20,14 @@ const incrementBlock = () => {
 }
 
 // blockMarker structure: {[blockCounterIndex]: transactionCounter]}
-// eg: {1: 5, 2: 17} -> first block is transactions 1-5, second block is 6-17
+// eg: {1: 5, 2: 17} -> first block starts at transaction 5, second block starts at transaction 17
 let blockMarkers = {};
 
-// never mutate state
+// state is immutable, reassign every time
 const setState = (newState) => {
     // TODO only track statesnapshots when beginning transactions, otherwise waste of memory
-    stateSnapshots.push(newState);
+    // use object.create to avoid memory/reference BS
+    stateSnapshots.push(Object.create(newState));
     state = newState;
 };
 
@@ -56,13 +57,14 @@ const get = (name) => {
     }
     const value = getState()[name] || null;
     print(`${value}\n`);
+    return value;
 }
 
 const unset = (name) => {
     if (!name) {
         print('Missing name\n');
     }
-    const newState = state;
+    const newState = Object.create(state);
     delete newState[name];
     setState(newState);
     incrementTransaction();
@@ -74,6 +76,7 @@ const numEqualTo = (value) => {
     }
     const matchLength = Object.values(state).filter(v => v === value).length;
     print(`${matchLength}\n`);
+    return matchLength;
 }
 
 const end = () => {
@@ -93,16 +96,16 @@ const begin = () => {
 
 const rollback = () => {
     if (!inTransaction) {
-        return print(`NO TRANSACTION\n`);
+        print(`NO TRANSACTION\n`);
+        return `NO TRANSACTION`;
     }
 
-    console.log(blockMarkers);
-    console.table(stateSnapshots);
     if (blockCounter > 0) {
         transactionCounter = blockMarkers[blockCounter];
         delete blockMarkers[blockCounter];
         blockCounter -= 1;
         const lastState = stateSnapshots[transactionCounter];
+        stateSnapshots.splice(transactionCounter + 1);
         setState(lastState);
     } else {
         inTransaction = false;
