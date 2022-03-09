@@ -2,6 +2,7 @@
 
 ### Prerequisites
 - [node](https://nodejs.org/en/download/)
+- npm
 - run in bash/zsh
 
 ### Running the program
